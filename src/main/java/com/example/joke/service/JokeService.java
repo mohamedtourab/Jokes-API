@@ -39,7 +39,9 @@ public class JokeService {
     }
 
     public Joke updateJoke(Joke joke, Integer jokeID) {
-        Joke oldJoke = jokeRepository.getOne(jokeID);
+        Joke oldJoke = jokeRepository.findById(jokeID).orElse(null);
+        if (oldJoke == null)
+            return null;
         oldJoke.setJokeText(joke.getJokeText());
         oldJoke.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         jokeRepository.save(oldJoke);
@@ -48,6 +50,6 @@ public class JokeService {
 
     public List<Joke> filterJokes(String filterString) {
         List<Joke> jokes = getAllJokes();
-        return jokes.stream().filter(joke -> joke.getJokeText().contains(filterString)).collect(Collectors.toList());
+        return jokes.stream().filter(joke -> joke.getJokeText().toLowerCase().contains(filterString.toLowerCase())).collect(Collectors.toList());
     }
 }

@@ -68,7 +68,10 @@ public class JokeController {
         if (joke.getJokeText().isBlank()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(jokeService.updateJoke(joke, jokeID), HttpStatus.OK);
+        Joke updatedJoke = jokeService.updateJoke(joke, jokeID);
+        if (updatedJoke == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(updatedJoke, HttpStatus.OK);
     }
 
     @GetMapping(path = "/{jokeID}")
