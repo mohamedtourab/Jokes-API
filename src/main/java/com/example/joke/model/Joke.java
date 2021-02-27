@@ -10,13 +10,13 @@ import java.util.Objects;
 public class Joke implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(nullable = false, name = "insert_time")
     private Timestamp insertTime;
 
-    @Column(nullable = false, name = "updateTime")
+    @Column(name = "updateTime")
     private Timestamp updateTime;
 
     @Column(name = "joke_text")

@@ -21,15 +21,18 @@ public class JokeController {
 
     @GetMapping
     @ResponseBody
-    public ResponseEntity<List<Joke>> getAllJokes(@RequestParam("Page") String pageNo,
-                                                  @RequestParam(value = "QuestionPerPage", defaultValue = "5") String QuestionPerPage) {
+    public ResponseEntity<List<Joke>> getAllJokes(@RequestParam(value = "Page", defaultValue = "1") Integer pageNo,
+                                                  @RequestParam(value = "QuestionPerPage", defaultValue = "5") Integer QuestionPerPage) {
         try {
-            int pageNumber = Integer.parseInt(pageNo) - 1;
-            int QuestionsPerPage = Integer.parseInt(QuestionPerPage);
+            int pageNumber = pageNo - 1;
+            int QuestionsPerPage = QuestionPerPage;
             List<Joke> jokes = jokeService.getAllJokes();
             if (pageNumber < 0 || QuestionsPerPage < 1) {
                 logger.error("Invalid Arguments");
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            if (QuestionsPerPage > jokes.size()) {
+                return new ResponseEntity<>(jokes, HttpStatus.OK);
             }
             int start = pageNumber * QuestionsPerPage;
             int end = start + QuestionsPerPage;
@@ -39,14 +42,30 @@ public class JokeController {
             }
             return new ResponseEntity<>(jokePage, HttpStatus.OK);
 
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | IndexOutOfBoundsException e) {
             logger.error("Failed to parse parameters\n" + e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (IndexOutOfBoundsException e) {
+        } catch (Exception e) {
             logger.error("Invalid page\n" + e);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
+    }
+
+    @PostMapping
+    public ResponseEntity<Joke> createJoke(@RequestBody Joke joke) {
+        if (joke.getJokeText().isBlank()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(jokeService.saveJoke(joke), HttpStatus.CREATED);
+    }
+
+    @PatchMapping(path = "/{jokeID}")
+    public ResponseEntity<Joke> updateJoke(@RequestBody Joke joke, @PathVariable Integer jokeID) {
+        if (joke.getJokeText().isBlank()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(jokeService.updateJokes(joke, jokeID), HttpStatus.OK);
     }
 
 }
