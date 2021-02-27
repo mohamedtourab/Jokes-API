@@ -41,9 +41,9 @@ public class JokeService {
     public Joke updateJoke(Joke joke, Integer jokeID) {
         Joke oldJoke = jokeRepository.getOne(jokeID);
         oldJoke.setJokeText(joke.getJokeText());
-        joke.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+        oldJoke.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         jokeRepository.save(oldJoke);
-        return joke;
+        return oldJoke;
     }
 
     public List<Joke> filterJokes(String filterString) {
