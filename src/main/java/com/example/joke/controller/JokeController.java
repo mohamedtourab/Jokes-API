@@ -61,11 +61,57 @@ public class JokeController {
     }
 
     @PatchMapping(path = "/{jokeID}")
-    public ResponseEntity<Joke> updateJoke(@RequestBody Joke joke, @PathVariable Integer jokeID) {
+    public ResponseEntity<Joke> updateJoke(@RequestBody Joke joke, @PathVariable("jokeID") Integer jokeID) {
+        if (jokeID < 0)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
         if (joke.getJokeText().isBlank()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(jokeService.updateJokes(joke, jokeID), HttpStatus.OK);
+        return new ResponseEntity<>(jokeService.updateJoke(joke, jokeID), HttpStatus.OK);
     }
+
+    @GetMapping(path = "/{jokeID}")
+    public ResponseEntity<Joke> getSingleJoke(@PathVariable("jokeID") Integer jokeID) {
+        if (jokeID < 0)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        Joke joke = jokeService.getJoke(jokeID).orElse(null);
+        if (joke == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        else
+            return new ResponseEntity<>(joke, HttpStatus.OK);
+
+    }
+
+    @DeleteMapping(path = "/{jokeID}")
+    public ResponseEntity<Joke> deleteJoke(@PathVariable("jokeID") Integer jokeID) {
+        if (jokeID < 0)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        Joke joke = jokeService.deleteJoke(jokeID);
+        if (joke == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        else
+            return new ResponseEntity<>(joke, HttpStatus.OK);
+
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Joke>> searchForJoke(@RequestParam("searchString") String searchString) {
+        if (searchString.isBlank() || searchString.isEmpty())
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        List<Joke> filteredJokes = jokeService.filterJokes(searchString);
+        if (filteredJokes.isEmpty())
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        else
+            return new ResponseEntity<>(filteredJokes, HttpStatus.OK);
+    }
+
+    @GetMapping("/random")
+    public ResponseEntity<Joke> getRandomJoke() {
+        return null;
+    }
+
 
 }
