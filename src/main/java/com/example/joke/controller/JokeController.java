@@ -17,7 +17,7 @@ public class JokeController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private JokeService jokeService;
+    private JokeService jokeServiceImpl;
 
     @GetMapping
     @ResponseBody
@@ -26,7 +26,7 @@ public class JokeController {
         try {
             int pageNumber = pageNo - 1;
             int QuestionsPerPage = QuestionPerPage;
-            List<Joke> jokes = jokeService.getAllJokes();
+            List<Joke> jokes = jokeServiceImpl.getAllJokes();
             if (pageNumber < 0 || QuestionsPerPage < 1) {
                 logger.error("Invalid Arguments");
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -57,7 +57,7 @@ public class JokeController {
         if (joke.getJokeText().isBlank()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(jokeService.saveJoke(joke), HttpStatus.CREATED);
+        return new ResponseEntity<>(jokeServiceImpl.saveJoke(joke), HttpStatus.CREATED);
     }
 
     @PatchMapping(path = "/{jokeID}")
@@ -68,7 +68,7 @@ public class JokeController {
         if (joke.getJokeText().isBlank()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        Joke updatedJoke = jokeService.updateJoke(joke, jokeID);
+        Joke updatedJoke = jokeServiceImpl.updateJoke(joke, jokeID);
         if (updatedJoke == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(updatedJoke, HttpStatus.OK);
@@ -79,7 +79,7 @@ public class JokeController {
         if (jokeID < 0)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-        Joke joke = jokeService.getJoke(jokeID).orElse(null);
+        Joke joke = jokeServiceImpl.getJoke(jokeID).orElse(null);
         if (joke == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         else
@@ -92,7 +92,7 @@ public class JokeController {
         if (jokeID < 0)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-        Joke joke = jokeService.deleteJoke(jokeID);
+        Joke joke = jokeServiceImpl.deleteJoke(jokeID);
         if (joke == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         else
@@ -104,7 +104,7 @@ public class JokeController {
     public ResponseEntity<List<Joke>> searchForJoke(@RequestParam("searchString") String searchString) {
         if (searchString.isBlank() || searchString.isEmpty())
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        List<Joke> filteredJokes = jokeService.filterJokes(searchString);
+        List<Joke> filteredJokes = jokeServiceImpl.filterJokes(searchString);
         if (filteredJokes.isEmpty())
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         else
@@ -113,7 +113,7 @@ public class JokeController {
 
     @GetMapping("/random")
     public ResponseEntity<Joke> getRandomJoke() {
-        Joke joke = jokeService.getRandomJoke();
+        Joke joke = jokeServiceImpl.getRandomJoke();
         if (joke == null)
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         return new ResponseEntity<>(joke, HttpStatus.OK);
