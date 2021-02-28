@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,5 +52,12 @@ public class JokeService {
     public List<Joke> filterJokes(String filterString) {
         List<Joke> jokes = getAllJokes();
         return jokes.stream().filter(joke -> joke.getJokeText().toLowerCase().contains(filterString.toLowerCase())).collect(Collectors.toList());
+    }
+
+    public Joke getRandomJoke() {
+        List<Joke> jokes = getAllJokes();
+        if (jokes.isEmpty())
+            return null;
+        return jokes.get(new Random().nextInt(jokes.size()));
     }
 }

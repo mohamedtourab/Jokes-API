@@ -113,7 +113,10 @@ public class JokeController {
 
     @GetMapping("/random")
     public ResponseEntity<Joke> getRandomJoke() {
-        return null;
+        Joke joke = jokeService.getRandomJoke();
+        if (joke == null)
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(joke, HttpStatus.OK);
     }
 
 
