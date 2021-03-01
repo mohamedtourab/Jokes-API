@@ -21,34 +21,17 @@ public class JokeController {
 
     @GetMapping
     @ResponseBody
-    public ResponseEntity<List<Joke>> getAllJokes(@RequestParam(value = "Page", defaultValue = "1") Integer pageNo,
-                                                  @RequestParam(value = "QuestionPerPage", defaultValue = "5") Integer QuestionPerPage) {
-        try {
-            int pageNumber = pageNo - 1;
-            int QuestionsPerPage = QuestionPerPage;
-            List<Joke> jokes = jokeServiceImpl.getAllJokes();
-            if (pageNumber < 0 || QuestionsPerPage < 1) {
-                logger.error("Invalid Arguments");
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-            if (QuestionsPerPage > jokes.size()) {
-                return new ResponseEntity<>(jokes, HttpStatus.OK);
-            }
-            int start = pageNumber * QuestionsPerPage;
-            int end = start + QuestionsPerPage;
-            List<Joke> jokePage = jokes.subList(start, end);
-            if (jokePage.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(jokePage, HttpStatus.OK);
-
-        } catch (NumberFormatException | IndexOutOfBoundsException e) {
-            logger.error("Failed to parse parameters\n" + e);
+    public ResponseEntity<List<Joke>> getAllJokes(@RequestParam(value = "Page", defaultValue = "0") Integer pageNo,
+                                                  @RequestParam(value = "QuestionPerPage", defaultValue = "5") Integer jokesPerPage) {
+        if (pageNo < 0 || jokesPerPage < 1) {
+            logger.error("Invalid Arguments");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            logger.error("Invalid page\n" + e);
+        }
+        List<Joke> jokePage = jokeServiceImpl.getAllJokes(pageNo, jokesPerPage);
+        if (jokePage.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        return new ResponseEntity<>(jokePage, HttpStatus.OK);
 
     }
 

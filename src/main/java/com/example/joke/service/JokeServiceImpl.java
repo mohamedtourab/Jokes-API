@@ -3,6 +3,8 @@ package com.example.joke.service;
 import com.example.joke.model.Joke;
 import com.example.joke.model.repository.JokeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -32,8 +34,9 @@ public class JokeServiceImpl implements JokeService {
     }
 
     @Override
-    public List<Joke> getAllJokes() {
-        return jokeRepository.findAll();
+    public List<Joke> getAllJokes(int pageNo, int jokesPerPage) {
+        Pageable page = PageRequest.of(pageNo, jokesPerPage);
+        return jokeRepository.findAll(page).toList();
     }
 
     @Override
@@ -56,13 +59,13 @@ public class JokeServiceImpl implements JokeService {
 
     @Override
     public List<Joke> filterJokes(String filterString) {
-        List<Joke> jokes = getAllJokes();
+        List<Joke> jokes = jokeRepository.findAll();
         return jokes.stream().filter(joke -> joke.getJokeText().toLowerCase().contains(filterString.toLowerCase())).collect(Collectors.toList());
     }
 
     @Override
     public Joke getRandomJoke() {
-        List<Joke> jokes = getAllJokes();
+        List<Joke> jokes = jokeRepository.findAll();
         if (jokes.isEmpty())
             return null;
         return jokes.get(new Random().nextInt(jokes.size()));

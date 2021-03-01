@@ -19,7 +19,7 @@ public interface JokeService {
      *
      * @return List of Joke object
      */
-    List<Joke> getAllJokes();
+    List<Joke> getAllJokes(int pageNo, int jokesPerPage);
 
     /**
      * This function save a new joke to the database, it save the timestamp when joke is created
