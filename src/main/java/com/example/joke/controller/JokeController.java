@@ -22,7 +22,7 @@ public class JokeController {
     @GetMapping
     @ResponseBody
     public ResponseEntity<List<Joke>> getAllJokes(@RequestParam(value = "Page", defaultValue = "0") Integer pageNo,
-                                                  @RequestParam(value = "QuestionPerPage", defaultValue = "5") Integer jokesPerPage) {
+                                                  @RequestParam(value = "JokesPerPage", defaultValue = "5") Integer jokesPerPage) {
         if (pageNo < 0 || jokesPerPage < 1) {
             logger.error("Invalid Arguments");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
